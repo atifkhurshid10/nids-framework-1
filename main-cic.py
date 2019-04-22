@@ -66,6 +66,13 @@ def outlier_report(df_y, outlier_indices):
     print("Is Normal |  ", round(false_positive / total * 100, 4), "          ",
           round(detected_normal / total * 100, 4))
     print("")
+    precision = detected_attack/(detected_attack + false_positive)
+    recall = detected_attack/(detected_attack + false_negtive)
+    f1 = (2*precision*recall)/(precision+recall)
+    print("Precision: ", round(precision, 3))
+    print("Recall: ", round(recall, 3))
+    print("F1-Score: ", round(f1, 3))
+    return [precision, recall, f1]
 
 def classification_result(y, y_pred):
     """
@@ -149,6 +156,7 @@ if __name__ == '__main__':
     print("Training Complete")
 
     cls_reports = []
+    out_reports = []
     breakpoints = {x : [] for x in file_list[1:]}
     for file in file_list[1:]:
         print("Loading data...")
@@ -189,7 +197,7 @@ if __name__ == '__main__':
             y_pred_list.extend(y_pred)
 
             if c % 10 == 0:
-                outlier_report(np.ndarray.flatten(y.values), outlier_indices)
+                _ = outlier_report(np.ndarray.flatten(y.values), outlier_indices)
                 print(classification_report(np.ndarray.flatten(outlier_y.values), y_pred, labels=classes))
                 print(confusion_matrix(np.ndarray.flatten(outlier_y.values), y_pred, labels=classes))
 
@@ -206,7 +214,7 @@ if __name__ == '__main__':
 
         print("FINAL REPORT OF FILE " + file)
         print("======================================================================================")
-        outlier_report(np.ndarray.flatten(df_y.values), out_idx)
+        out_reports.append(outlier_report(np.ndarray.flatten(df_y.values), out_idx))
         print("======================================================================================")
         print(classification_report(df_y.iloc[out_idx].values, y_pred_list, labels=classes))
         print(confusion_matrix(df_y.iloc[out_idx].values, y_pred_list, labels=classes))
@@ -231,12 +239,15 @@ if __name__ == '__main__':
     mi = [0,0,0]
     ma = [0,0,0]
     w = [0,0,0]
+    o = [0,0,0]
     word = ['precision', 'recall', 'f1-score']
     for i in range(len(cls_reports)):
         for j in range(3):
             mi[j] += weights[i] * micro_avg[i][word[j]]
             ma[j] += weights[i] * macro_avg[i][word[j]]
             w[j] += weights[i] * weighted[i][word[j]]
+            o[j] += weights[i] * out_reports[i][j]
+    print(o)
     print(mi)
     print(ma)
     print(w)
