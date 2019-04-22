@@ -63,7 +63,7 @@ class BasicFlow:
         self.__fwdPktStats = summaryStatistics()
         self.__bwdPktStats = summaryStatistics()
         self.__flagCounts = None
-        self.initFlags();
+        self.initFlags()
         self.__forwardBytes = 0
         self.__backwardBytes = 0
         self.__startActiveTime = 0

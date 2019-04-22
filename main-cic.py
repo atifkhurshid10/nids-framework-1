@@ -66,9 +66,15 @@ def outlier_report(df_y, outlier_indices):
     print("Is Normal |  ", round(false_positive / total * 100, 4), "          ",
           round(detected_normal / total * 100, 4))
     print("")
-    precision = detected_attack/(detected_attack + false_positive)
-    recall = detected_attack/(detected_attack + false_negtive)
-    f1 = (2*precision*recall)/(precision+recall)
+    if detected_attack > 0:
+        precision = detected_attack/(detected_attack + false_positive)
+        recall = detected_attack/(detected_attack + false_negtive)
+        f1 = (2 * precision * recall) / (precision + recall)
+    else:
+        precision = 0
+        recall = 0
+        f1 = 0
+        
     print("Precision: ", round(precision, 3))
     print("Recall: ", round(recall, 3))
     print("F1-Score: ", round(f1, 3))
