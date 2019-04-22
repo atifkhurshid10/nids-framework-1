@@ -68,6 +68,13 @@ def outlier_report(df_y, outlier_indices):
     print("")
 
 def classification_result(y, y_pred):
+    """
+
+    :param y:
+    :param y_pred:
+
+    :return:
+    """
     assert len(y) == len(y_pred)
     correct = []
     wrong = []
@@ -79,6 +86,12 @@ def classification_result(y, y_pred):
     return correct, wrong
 
 def read_file(name):
+    """
+
+    :param name:
+
+    :return:
+    """
     df = pd.read_csv(name, na_values="Infinity", dtype=dtypes)
     df = df.replace("Infinity", sys.maxsize)
     df = df.fillna(sys.maxsize)

@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
+import random as rd
 from sklearn.metrics import classification_report
 from sklearn.exceptions import UndefinedMetricWarning
-
-import matplotlib.pyplot as plt
-
-import random as rd
-import time
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -19,34 +15,18 @@ from detection.detection import Detection
 from detection.preprocessing.preprocessing import process_features
 from detection.preprocessing.preprocessing import process_labels
 
-
-def load_data(data_file, categorical_feature_list, categories_list):
-    df_X = pd.read_csv(data_file)
-    df_X = process_features(df_X, categorical_feature_list, categories_list)
-    df_X = df_X.astype(np.float64)
-    return df_X
-
-
-def load_labels(labels_file, labels, classes):
-    df_y = pd.read_csv(labels_file)
-    df_y = process_labels(df_y, labels, classes)
-    return df_y
-
-
-def overall_report(df_y, y_pred_dict):
-    """
-    :param df_y: DataFrame containing true classification
-    :param y_pred_dict: Dictionary {index : class} where index is member of outlier_indices
-    :return: Print overall classiifcation report
-    """
-    final_pred = np.zeros((df_y.shape[0]))
-    for k, v in y_pred_dict.items():
-        final_pred[k] = v
-
-    print(classification_report(df_y, final_pred))
+MIN_SIZE = 50
+MAX_SIZE = max(MIN_SIZE+1, 300)
 
 
 def outlier_report(df_y, outlier_indices):
+    """
+
+    :param df_y:
+    :param outlier_indices:
+
+    :return:
+    """
     detected_attack = 0
     detected_normal = 0
     false_negtive = 0
@@ -85,28 +65,6 @@ def outlier_report(df_y, outlier_indices):
           round(detected_normal / total * 100, 4))
     print("")
 
-
-def __log(message):
-    print(message, end='')
-    time.sleep(0.3)
-    print(".", end='')
-    time.sleep(0.3)
-    print(".", end='')
-    time.sleep(0.3)
-    print(".", end='')
-    time.sleep(0.3)
-
-def classification_result(y, y_pred):
-    assert len(y) == len(y_pred)
-    correct = []
-    wrong = []
-    for i in range(len(y)):
-        if y[i] == y_pred[i]:
-            correct.append(i)
-        else:
-            wrong.append(i)
-    return correct, wrong
-
 if __name__ == '__main__':
     data_directoy = "../NSL-KDD/"
     train_file = data_directoy + "KDDTrain+.csv"
@@ -120,14 +78,6 @@ if __name__ == '__main__':
     det = Detection(classes=classes , threshold_percentile=threshold_percentile, truth_size=truth_size,
                     truth_update_frac=truth_update_frac, truth_save_folder=truth_save_folder,
                     outlier_save_folder=outlier_save_folder, classifier_save_folder=classifier_save_folder)
-    """
-    normal_data = load_data(normal_file, categorical_feature_list=categorical_feature_list, categories_list=categories_list)
-
-    X = load_data(data_file, categorical_feature_list=categorical_feature_list, categories_list=categories_list)
-
-    y = load_labels(labels_file, labels=labels, classes=classes)
-    y_cls = y['class']
-    """
 
     df = pd.read_csv(data_directoy + train_file, header=None, names=headers)
     df_X = df[features].copy()
@@ -137,7 +87,7 @@ if __name__ == '__main__':
     df_X = df_X.astype(np.float64)
     df_y = process_labels(df_y, labels, classes)
 
-    normal_X = df_X.iloc[df_y.loc[df_y[target[0]] == 'normal'].index]
+    normal_X = df_X.iloc[df_y.loc[df_y['class'] == 0].index]
     truth_size = min(truth_size, normal_X.shape[0])
     # Choose "truth_size" randomly sampled rows from all normal records
     truth = normal_X.sample(n=truth_size, random_state=None)
@@ -145,7 +95,6 @@ if __name__ == '__main__':
     df_X = df_X.drop(truth.index)
     df_y = df_y.drop(truth.index)
     y_cls = df_y['class']
-
     det.initialize(truth, df_X, y_cls)
 
     df_t = pd.read_csv(data_directoy + test_file, header=None, names=headers)
@@ -157,36 +106,7 @@ if __name__ == '__main__':
     yt = process_labels(yt, labels, classes)
     yt_cls = yt['class']
 
-    """
-    #normal_X = Xt.iloc[yt.loc[yt['class'] == 0].index]
-    #det.update_outlier(normal_X)
-    #det.update_classifier(Xt, yt_cls)
-
-    outlier_indices = det.detect_outliers(Xt)
-    outlier_report(yt_cls.values, outlier_indices)
-
-    normal_indices = Xt.index.difference(outlier_indices)
-    #det.update_outlier(Xt.iloc[normal_indices])
-
-    outlier_Xt = Xt.iloc[outlier_indices]
-    y_pred = det.classfiy(outlier_Xt)
-    outlier_yt = yt_cls.iloc[outlier_indices]
-
-    print(classification_report(outlier_yt.values, y_pred, labels=classes))
-    final_pred = []
-    outcount = 0
-    for j in range(Xt.shape[0]):
-        if outlier_indices[min(outcount, len(outlier_indices) - 1)] == j:
-            final_pred.append(y_pred[outcount])
-            outcount += 1
-        else:
-            final_pred.append(0)  # Class Normal
-    print(classification_report(yt_cls.values, final_pred, labels=classes))
-    exit()
-    """
     i = 0
-    minsize = 500000000
-    maxsize = 5000000000
     s = Xt.shape[0]
     list_Xt = []
     list_yt = []
@@ -196,7 +116,7 @@ if __name__ == '__main__':
 
     while i < s:
         breakpoints.append(i)
-        j = rd.randint(i + minsize, i + maxsize)
+        j = rd.randint(i + MIN_SIZE, i + MAX_SIZE)
         j = min(j, s)
         Xt_slice = pd.DataFrame(Xt[i:j].values, columns=new_features, dtype=np.float64)
         yt_slice = pd.DataFrame(yt_cls[i:j].values, columns=['class'], dtype=np.int64)
@@ -206,56 +126,27 @@ if __name__ == '__main__':
 
     y_pred_list = []
     out_idx = []
-    """
-    normal_X = list_Xt[0].iloc[list_yt[0].loc[list_yt[0]['class'] == 0].index].copy()
-    truth_size = min(truth_size, normal_X.shape[0])
-    # Choose "truth_size" randomly sampled rows from all normal records
-    truth = normal_X.sample(n=truth_size, random_state=None)
-
-    det.update_outlier(truth)
-
-    df_X = list_Xt[0].drop(truth.index)
-    df_y = list_yt[0].drop(truth.index)
-
-    det.update_classifier(df_X, df_y)
-    """
-    #cls_report = []
-    #xaxis = []
-
     final_pred = []
 
     for i in range(len(list_Xt)):
-        #xaxis.append(i)
         print("Step " + str(i))
         X = list_Xt[i]
         y = list_yt[i]
         y_cls = y
 
         outlier_indices = det.detect_outliers(X)
-        #outlier_report(y_cls.values, outlier_indices)
-
-        out_idx.extend([x + breakpoints[i] for x in outlier_indices])
-
         normal_indices = X.index.difference(outlier_indices)
         det.update_outlier(X.iloc[normal_indices])
 
         outlier_X = X.iloc[outlier_indices]
-        y_pred = det.classfiy(outlier_X)
         outlier_y = y_cls.iloc[outlier_indices]
-        print("")
-        #cls_report.append(classification_report(outlier_y.values, y_pred, output_dict=True, labels=classes))
+        normal_X = X.iloc[outlier_y.loc[outlier_y['class'] == 0].index]
 
-        #print(classification_report(outlier_y.values, y_pred, labels=classes))
-
-        print(outlier_y.values.shape)
-        correct_indices, wrong_indices = classification_result(outlier_y.values, y_pred)
-
-        correct_X = outlier_X.iloc[correct_indices]
-
-        det.update_outlier(correct_X)
+        y_pred = det.classfiy(outlier_X)
         det.update_classifier(outlier_X, np.ndarray.flatten(outlier_y.values))
-        #det.update_classifier(wrong_X, wrong_y)
-        #det.update_classifier(outlier_X, outlier_y)
+        det.update_outlier(normal_X)
+
+        out_idx.extend([x + breakpoints[i] for x in outlier_indices])
 
         outcount = 0
         for j in range(list_Xt[i].shape[0]):
@@ -264,11 +155,7 @@ if __name__ == '__main__':
                 outcount += 1
             else:
                 final_pred.append(0) # Class Normal
-
         y_pred_list.extend(y_pred)
-
-        # inidx = X.index.difference(outidx)
-        print("")
 
     print("==================================================================================")
     print("FINAL REPORT")

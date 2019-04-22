@@ -1,7 +1,7 @@
 import numpy as np
 
 # Base Truth configuration
-truth_size = 20000
+truth_size = 2000
 truth_update_frac = 0.10
 threshold_percentile = 40
 
@@ -35,13 +35,13 @@ services = ['ftp_data', 'other', 'private', 'http', 'remote_job', 'name', 'netbi
 flags = ['SF', 'S0', 'REJ', 'RSTR', 'SH', 'RSTO', 'S1', 'RSTOS0', 'S3', 'S2', 'OTH']
 categories_list = [protocols, services, flags]
 
-"""
+
 labels = ['normal', 'neptune', 'warezclient', 'ipsweep', 'portsweep', 'teardrop', 'nmap', 'satan', 'smurf', 'pod',
            'back', 'guess_passwd', 'ftp_write', 'multihop', 'rootkit', 'buffer_overflow', 'imap', 'warezmaster', 'phf',
            'land', 'loadmodule', 'spy', 'perl', 'saint', 'mscan', 'apache2', 'snmpgetattack', 'processtable',
            'httptunnel', 'ps', 'snmpguess', 'mailbomb', 'named', 'sendmail', 'xterm', 'worm', 'xlock', 'xsnoop',
            'sqlattack', 'udpstorm']
-"""
+
 
 # Configuration for CICIDS Dataset
 head = {' Fwd IAT Max', ' Bwd Avg Bytes/Bulk', ' Flow Packets/s', ' Packet Length Variance', 'FIN Flag Count',
@@ -60,11 +60,11 @@ head = {' Fwd IAT Max', ' Bwd Avg Bytes/Bulk', ' Flow Packets/s', ' Packet Lengt
         ' Bwd IAT Max', ' Bwd Avg Packets/Bulk', ' Subflow Bwd Bytes', ' Avg Fwd Segment Size', ' Label',
         ' CWE Flag Count', ' Fwd Packet Length Max', 'Bwd IAT Total', ' Fwd Header Length', 'Fwd Packets/s',
         ' Bwd Packets/s', 'Fwd IAT Total', ' Fwd IAT Mean', ' Fwd URG Flags'}
-
+"""
 labels = ['BENIGN', 'Heartbleed', 'Bot', 'Web Attack � Brute Force', 'FTP-Patator', 'PortScan', 'DoS Slowhttptest',
           'DoS Hulk', 'Infiltration', 'DoS slowloris', 'Web Attack � Sql Injection', 'DDoS', 'SSH-Patator',
           'DoS GoldenEye', 'Web Attack � XSS']
-
+"""
 classes = [i for i in range(len(labels))]
 
 dtypes = {k: np.float64 for k in head}
