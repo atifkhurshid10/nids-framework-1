@@ -74,7 +74,7 @@ def outlier_report(df_y, outlier_indices):
         precision = 0
         recall = 0
         f1 = 0
-        
+
     print("Precision: ", round(precision, 3))
     print("Recall: ", round(recall, 3))
     print("F1-Score: ", round(f1, 3))
