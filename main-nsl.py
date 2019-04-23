@@ -16,7 +16,7 @@ from detection.preprocessing.preprocessing import process_features
 from detection.preprocessing.preprocessing import process_labels
 
 MIN_SIZE = 50
-MAX_SIZE = max(MIN_SIZE+1, 300)
+MAX_SIZE = max(MIN_SIZE+1, 200)
 
 
 def outlier_report(df_y, outlier_indices):
@@ -64,6 +64,19 @@ def outlier_report(df_y, outlier_indices):
     print("Is Normal |  ", round(false_positive / total * 100, 4), "          ",
           round(detected_normal / total * 100, 4))
     print("")
+    if detected_attack > 0:
+        precision = detected_attack/(detected_attack + false_positive)
+        recall = detected_attack/(detected_attack + false_negtive)
+        f1 = (2 * precision * recall) / (precision + recall)
+    else:
+        precision = 0
+        recall = 0
+        f1 = 0
+
+    print("Precision: ", round(precision, 3))
+    print("Recall: ", round(recall, 3))
+    print("F1-Score: ", round(f1, 3))
+    return [precision, recall, f1]
 
 if __name__ == '__main__':
     data_directoy = "../NSL-KDD/"
@@ -160,7 +173,7 @@ if __name__ == '__main__':
     print("==================================================================================")
     print("FINAL REPORT")
 
-    outlier_report(yt_cls, out_idx)
+    _ = outlier_report(yt_cls, out_idx)
     print(classification_report(yt_cls.iloc[out_idx], y_pred_list, labels=classes))
     print(classification_report(yt_cls, final_pred, labels=classes))
 

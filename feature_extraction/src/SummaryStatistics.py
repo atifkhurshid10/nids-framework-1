@@ -1,21 +1,22 @@
-from statistics import stdev 
-  
+from statistics import stdev
+
 # importing frations as parameter values 
 from fractions import Fraction as fr
+
 
 class summaryStatistics():
     def __init__(self):
         self.__min = None
         self.__max = None
         self.__sum = 0.0
-       
+
         self.__count = 0
         self.__X = []
 
-    def addValue(self,value):
+    def addValue(self, value):
 
         self.__sum += value
-        
+
         self.__count += 1
         self.__X.append(value)
 
@@ -31,7 +32,6 @@ class summaryStatistics():
 
     def getSum(self):
         return self.__sum
-
 
     def getCount(self):
         return self.__count
@@ -53,17 +53,10 @@ class summaryStatistics():
             return 0
         else:
             return stdev(self.__X)
-            #return self.getVariance() ** (1/2.0)
-            
+            # return self.getVariance() ** (1/2.0)
+
     def getVariance(self):
         if self.__count == 0:
             return 0
         else:
             return self.getStandardDeviation() * self.getStandardDeviation()
-
-        
-
-
-
-
-

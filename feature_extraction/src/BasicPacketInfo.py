@@ -3,37 +3,35 @@
 import pcap
 import sys
 import socket
-import struct 
+import struct
 
 
 class BasicPacketInfo:
 
     def __init__(
-        self,
-        src,
-        dst,
-        srcPort,
-        dstPort,
-        protocol,
-        timestamp,
-        generator,
-        ):
+            self,
+            src,
+            dst,
+            srcPort,
+            dstPort,
+            protocol,
+            timestamp,
+            generator,
+    ):
 
-    # Info to generate flows from packers (8/8)
-     
-        self.__id = 1 #generator.nextId()
+        # Info to generate flows from packers (8/8)
+
+        self.__id = 1  # generator.nextId()
         self.__src = src
         self.__dst = dst
-       
+
         self.__srcPort = srcPort
         self.__dstPort = dstPort
         self.__protocol = protocol
         self.__timestamp = timestamp
         self.generateFlowId()
-        
-        
 
-    # Flags (8/8)
+        # Flags (8/8)
 
         self.__flagFIN = False
         self.__flagPSH = False
@@ -44,29 +42,29 @@ class BasicPacketInfo:
         self.__flagCWR = False
         self.__flagRST = False
 
-    # Additional details (3/3)
+        # Additional details (3/3)
 
         self.__TCPWindow = -1
         self.__headerBytes = 0
         self.__payloadPacket = 0
-        #Work fine i think 
-    
 
+    # Work fine i think
 
     def generateFlowId(self):
         forward = True
-        for i in range(0,len(self.__src)):
+        for i in range(0, len(self.__src)):
             print('')
             if self.__src[i] != self.__dst[i]:
                 if self.__src[i] > self.__dst[i]:
                     forward = False
                 break
         if forward:
-            self.__flowId = self.getSourceIp() + "-" + self.getDestinationIp() + "-" + str(self.__srcPort) + "-" + str(self.__dstPort) + "-" + str(self.__protocol)
+            self.__flowId = self.getSourceIp() + "-" + self.getDestinationIp() + "-" + str(self.__srcPort) + "-" + str(
+                self.__dstPort) + "-" + str(self.__protocol)
         else:
-            self.__flowId = self.getDestinationIp() + "-" + self.getSourceIp() + "-" + str(self.__dstPort) + "-" + str(self.__srcPort) + "-" + str(self.__protocol)
+            self.__flowId = self.getDestinationIp() + "-" + self.getSourceIp() + "-" + str(self.__dstPort) + "-" + str(
+                self.__srcPort) + "-" + str(self.__protocol)
         return self.__flowId
-
 
     def dumpInfo(self):
         return None
@@ -74,22 +72,23 @@ class BasicPacketInfo:
     def getPayloadPacket(self):
         self.__payloadPacket = self.__payloadPacket + 0x01
         return self.__payloadPacket
+
     def getFlowSrc(self):
         print('Returning:{}'.format(self.__flowSrc))
         return self.__flowSrc
 
-    def getSourceIp(self):          
-        if len(self.__src) == 16:           
-            return socket.inet_ntop(10, self.__src)                 
+    def getSourceIp(self):
+        if len(self.__src) == 16:
+            return socket.inet_ntop(10, self.__src)
         return socket.inet_ntoa((self.__src))
-     # convert to utils format
+
+    # convert to utils format
 
     def getDestinationIp(self):
-        if len(self.__dst) == 16:           
-            return socket.inet_ntop(10, self.__dst)                 
+        if len(self.__dst) == 16:
+            return socket.inet_ntop(10, self.__dst)
         return socket.inet_ntoa(self.__dst)  # convert to utils format
-    
-        
+
     def getId(self):
         return self.__id
 
@@ -238,7 +237,4 @@ class BasicPacketInfo:
             self.__flagCWR = True
 
     def isForward(self):
-            return self.__isForward
-
-
-            
+        return self.__isForward

@@ -1,9 +1,9 @@
 import numpy as np
 
 # Base Truth configuration
-truth_size = 20000
-truth_update_frac = 0.10
-threshold_percentile = 40
+truth_size = 500
+truth_update_frac = 0.05
+threshold_percentile = 35
 
 truth_save_folder = "./detection/outlier/truth/save_state/"
 outlier_save_folder = "./detection/outlier/save_state/"
@@ -61,9 +61,13 @@ head = {' Fwd IAT Max', ' Bwd Avg Bytes/Bulk', ' Flow Packets/s', ' Packet Lengt
         ' CWE Flag Count', ' Fwd Packet Length Max', 'Bwd IAT Total', ' Fwd Header Length', 'Fwd Packets/s',
         ' Bwd Packets/s', 'Fwd IAT Total', ' Fwd IAT Mean', ' Fwd URG Flags'}
 
+"""
 labels = ['BENIGN', 'Heartbleed', 'Bot', 'Web Attack � Brute Force', 'FTP-Patator', 'PortScan', 'DoS Slowhttptest',
           'DoS Hulk', 'Infiltration', 'DoS slowloris', 'Web Attack � Sql Injection', 'DDoS', 'SSH-Patator',
           'DoS GoldenEye', 'Web Attack � XSS']
+"""
+
+labels = ['BENIGN', 'DoS', 'PortScan', 'DDoS']
 
 classes = [i for i in range(len(labels))]
 
